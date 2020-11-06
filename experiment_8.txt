@@ -1,0 +1,365 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define N 30
+#define M 6
+
+typedef struct student
+{
+    long ID;
+    char name[N];
+    int score[M];
+    int sum;
+    float ave;
+}STUDENT;
+
+int Input(STUDENT stu[],int m);//Input record
+void Cal1(STUDENT stu[],int n,int m);//Calculate total and average score of every course
+void Cal2(STUDENT stu[],int n,int m);//Calculate total and average score of every student
+void SelectSort(STUDENT stu[],int a,int n,int (*compare)(int a,int b),int t);//Sort in descending order by score or Sort in ascending order by score
+void SortString(STUDENT stu[],int a,int n);//Sort in dictionary order by name
+int Sea1(STUDENT stu[],long x,int n);//Search by number
+int Sea2(STUDENT stu[],int n,char Name[]);//Search by name
+void Sta(STUDENT stu[],int n,int a);//Statistic analysis
+int Descending(int a,int b);//Descend by score
+int Ascending1(int a,int b);//Ascend by score
+long Ascending2(long a,long b);//Ascend by number
+
+int main()
+{
+    STUDENT stu[N];
+    char Name[N];
+    int i,j,y,m,n,a;
+    long x;
+    printf("Number:200110929\nsubject NO.8 - program NO.1\n\n");
+    printf("1.Input record\n2.Calculate total and average score of every course\n3.Calculate total and average score of every student\n");
+    printf("4.Sort in descending order by total score of every student\n5.Sort in ascending order by total score of every student\n");
+    printf("6.Sort in ascending order by number\n7.Sort in dictionary order by name\n8.Search by number\n9.Search by name\n10.Statistic analysis for every course\n11.List record\n0.Exit\n");
+    do{
+    printf("Please enter your choice:\n");
+    while(scanf("%d",&m)!=1)
+    {
+        fflush(stdin);
+        printf("Invalid input!\nPlease enter your choice again:\n");
+        continue;
+    }
+    switch(m)
+    {
+    case 0:
+        break;
+    case 1:
+        printf("Input the number of courses:\n");
+        while(scanf("%d",&a)!=1)
+        {
+            fflush(stdin);
+            printf("Invalid input!Please input again:\n");
+            continue;
+        }
+        n=Input(stu,a);
+        Cal2(stu,n,a);
+        break;
+    case 2:
+        Cal1(stu,n,a);
+        break;
+    case 3:
+        Cal2(stu,n,a);
+        for (i=0;i<n;i++)
+        printf("Sum of Student%d:%d\tAverage of Student%d:%f\n",i+1,stu[i].sum,i+1,stu[i].ave);
+        break;
+    case 4:
+        SelectSort(stu,a,n,Descending,1);
+        printf("Descending order by total score of every student:\n");
+        printf("ID\t\tscore\n");
+        for(i=0;i<n;i++)
+            printf("%ld\t%d\n",stu[i].ID,stu[i].sum);
+        break;
+    case 5:
+        SelectSort(stu,a,n,Ascending1,1);
+        printf("Ascending order by total score of every student:\n");
+        printf("ID\t\tscore\n");
+        for(i=0;i<n;i++)
+            printf("%ld\t%d\n",stu[i].ID,stu[i].sum);
+        break;
+    case 6:
+        SelectSort(stu,a,n,Ascending2,2);
+        printf("Ascending order by number:\n");
+        printf("ID\t\tscore\n");
+        for(i=0;i<n;i++)
+            printf("%ld\t%d\n",stu[i].ID,stu[i].sum);
+        break;
+    case 7:
+        SortString(stu,a,n);
+        printf("Dictionary order by name:\n");
+        printf("name\tID\t\tscore\n");
+        for(i=0;i<n;i++)
+            printf("%s\t%ld\t%d\n",stu[i].name,stu[i].ID,stu[i].sum);
+        break;
+    case 8:
+        SelectSort(stu,a,n,Descending,1);
+        printf("Input the searching ID:");
+        scanf("%ld",&x);
+        y=Sea1(stu,x,n);
+        if(y!=-1)
+        {
+            for(i=0;i<a;i++)
+            printf("course%d\t%d\n",i+1,stu[y].score[i]);
+            printf("rank:%d\n",y+1);
+        }
+        else
+            printf("Not Found!\n");
+        break;
+    case 9:
+        SelectSort(stu,a,n,Descending,1);
+        printf("Input the searching name:");
+        getchar();
+        gets(Name);
+        y=Sea2(stu,n,Name);
+        if(y!=-1)
+        {
+            for(i=0;i<a;i++)
+            printf("course%d\t%d\n",i+1,stu[y].score[i]);
+            printf("rank:%d\n",y+1);
+        }
+        else
+            printf("Not Found!\n");
+        break;
+    case 10:
+        Sta(stu,n,a);
+        break;
+    case 11:
+        Cal2(stu,n,a);
+        printf("List record:\n");
+        for(i=0;i<n;i++)
+            {
+            printf("%ld\t%s\t",stu[i].ID,stu[i].name);
+            for(j=0;j<a;j++)
+                printf("course%d:%d\t",j+1,stu[i].score[j]);
+            printf("total:%d\taverage:%f\n",stu[i].sum,(float)(stu[i].sum)/n);
+            }
+            break;
+    default:
+        printf("Invalid input!");
+        break;
+    }
+    }while(m!=0);
+    return 0;
+}
+
+int Input(STUDENT stu[],int m)
+{
+    int i,flag=1,j;
+    char ch;
+    while(flag)
+    {
+        i=-1;
+        do{
+            i++;
+            printf("Input student's ID and score:\nID\t");
+            for(j=1;j<=m;j++)
+                printf("course%d\t",j);
+                printf("\n");
+            while(scanf("%ld",&stu[i].ID)!=1)
+            {
+                fflush(stdin);
+                printf("Invalid Input!Please input again!\n");
+                continue;
+            }
+            for (j=0;j<m;j++)
+            scanf("%d",&stu[i].score[j]);
+            getchar();
+            printf("Input student's name:");
+            gets(stu[i].name);
+            printf("Do you want to record more?(Y/N):");
+            scanf("%c",&ch);
+        }while(ch=='Y');
+        i++;
+        if(i>0)
+        {
+        flag=0;
+        printf("The total number of the students is %d\n",i);
+        }
+        else
+        printf("Invalid Input!Please input again!\n");
+    }
+    return i;
+}
+
+void Cal1(STUDENT stu[],int n,int m)
+{
+    int i,j,Sum[N]={0};
+    for (j=0;j<m;j++)
+    {
+        for (i=0;i<n;i++)
+            Sum[j]+=stu[i].score[j];
+    printf("Sum of Course%d:%d\tAverage of Course%d:%f\n",j+1,Sum[j],j+1,(float)(Sum[j])/n);
+    }
+}
+
+void Cal2(STUDENT stu[],int n,int m)
+{
+    int i,j;
+    for(i=0;i<n;i++)
+    {
+
+    }
+    for (i=0;i<n;i++)
+    {
+        for (j=0;j<m;j++)
+            stu[i].sum+=stu[i].score[j];
+    stu[i].ave=(float)(stu[i].sum)/n;
+    }
+}
+
+void SelectSort(STUDENT stu[],int a,int n,int (*compare)(int a,int b),int t)
+{
+    int i,j,k,temp1,temp3;
+    long temp2;
+    char temp[N];
+    for (i=0;i<n-1;i++)
+    {
+        k=i;
+        if (t==1)
+        {
+            for(j=i+1;j<n;j++)
+            {
+                if ((*compare)(stu[j].sum,stu[k].sum))
+                    k=j;
+            }
+        }
+        else
+        {
+            for(j=i+1;j<n;j++)
+            {
+                if ((*compare)(stu[j].ID,stu[k].ID))
+                    k=j;
+            }
+        }
+        if (k!=i)
+        {
+            temp1=stu[k].sum;
+            stu[k].sum=stu[i].sum;
+            stu[i].sum=temp1;
+            temp2=stu[k].ID;
+            stu[k].ID=stu[i].ID;
+            stu[i].ID=temp2;
+            strcpy(temp,stu[i].name);
+            strcpy(stu[i].name,stu[k].name);
+            strcpy(stu[k].name,temp);
+            for(j=0;j<a;j++)
+            {
+                temp3=stu[k].score[j];
+                stu[k].score[j]=stu[i].score[j];
+                stu[i].score[j]=temp3;
+            }
+        }
+    }
+}
+
+void SortString(STUDENT stu[],int a,int n)
+{
+    int i,j,k,temp1,temp3;
+    long temp2;
+    char temp[N];
+    for (i=0;i<n-1;i++)
+    {
+        for(j=i+1;j<n;j++)
+        {
+            if (strcmp(stu[i].name,stu[j].name)>0)
+            {
+                strcpy(temp,stu[i].name);
+                strcpy(stu[i].name,stu[j].name);
+                strcpy(stu[j].name,temp);
+                temp1=stu[i].sum;
+                stu[i].sum=stu[j].sum;
+                stu[j].sum=temp1;
+                temp2=stu[i].ID;
+                stu[i].ID=stu[j].ID;
+                stu[j].ID=temp2;
+                for(k=0;k<a;k++)
+            {
+                temp3=stu[j].score[k];
+                stu[j].score[k]=stu[i].score[k];
+                stu[i].score[k]=temp3;
+            }
+            }
+        }
+    }
+
+}
+
+int Sea1(STUDENT stu[],long x,int n)
+{
+    int i;
+    for (i=0;i<n;i++)
+    {
+        if (stu[i].ID==x)
+            return i;
+    }
+    return -1;
+}
+
+int Sea2(STUDENT stu[],int n,char Name[])
+{
+    int i;
+    for (i=0;i<n;i++)
+    {
+        if (strcmp(stu[i].name,Name)==0)
+            return i;
+    }
+    return -1;
+}
+
+void Sta(STUDENT stu[],int n,int a1)
+{
+    int i,j,a[5];
+    for (j=0;j<a1;j++)
+    {
+        for (i=0;i<5;i++)
+        {
+            a[i]=0;
+        }
+        for(i=0;i<n;i++)
+        {
+        switch(stu[i].score[j]/10)
+        {
+        case 10:
+        case 9:
+            a[0]++;
+            break;
+        case 8:
+            a[1]++;
+            break;
+        case 7:
+            a[2]++;
+            break;
+        case 6:
+            a[3]++;
+            break;
+        default:
+            a[4]++;
+            break;
+        }
+        }
+        printf("course%d:\n",j+1);
+        printf("优秀:%d人\t%.2f%%\n",a[0],((float)a[0]/n)*100);
+        printf("良好:%d人\t%.2f%%\n",a[1],((float)a[1]/n)*100);
+        printf("中等:%d人\t%.2f%%\n",a[2],((float)a[2]/n)*100);
+        printf("及格:%d人\t%.2f%%\n",a[3],((float)a[3]/n)*100);
+        printf("不及格:%d人\t%.2f%%\n",a[4],((float)a[4]/n)*100);
+    }
+}
+
+int Descending(int a,int b)
+{
+    return a>b;
+}
+
+int Ascending1(int a,int b)
+{
+    return a<b;
+}
+
+long Ascending2(long a,long b)
+{
+    return a<b;
+}
